@@ -403,6 +403,12 @@ darkModeToggle.addEventListener('change', () => {
 
 searchEngineSelect.addEventListener('change', () => {
     localStorage.setItem('searchEngine', searchEngineSelect.value);
+    // Reload active tab if it's newtab.html to update its placeholder
+    const activeTab = tabs.find(t => t.id === activeTabId);
+    if (activeTab && activeTab.url === 'newtab.html') {
+        const iframe = document.getElementById(`iframe-${activeTabId}`);
+        iframe.src = iframe.src;
+    }
 });
 
 // Load Settings

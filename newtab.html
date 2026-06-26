@@ -26,6 +26,15 @@
             align-items: center;
             gap: 15px;
         }
+        @media (max-width: 600px) {
+            .logo {
+                font-size: 48px;
+            }
+            .shortcuts {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 15px !important;
+            }
+        }
         .search-container {
             width: 90%;
             max-width: 600px;
@@ -111,13 +120,36 @@
 
     <script>
         const searchInput = document.getElementById('search-input');
+
+        // Update placeholder based on selected engine
+        const engine = localStorage.getItem('searchEngine') || 'google';
+        const engineName = engine.charAt(0).toUpperCase() + engine.slice(1);
+        searchInput.placeholder = `${engineName} で検索または URL を入力`;
+
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                const query = searchInput.value;
+                const query = searchInput.value.trim();
+                if (query === '') return;
+
                 if (query.includes('.') && !query.includes(' ')) {
                     window.location.href = query.startsWith('http') ? query : 'https://' + query;
                 } else {
-                    window.location.href = 'https://www.google.com/search?q=' + encodeURIComponent(query) + '&igu=1';
+                    const engine = localStorage.getItem('searchEngine') || 'google';
+                    let searchUrl;
+                    switch(engine) {
+                        case 'bing':
+                            searchUrl = 'https://www.bing.com/search?q=' + encodeURIComponent(query);
+                            break;
+                        case 'duckduckgo':
+                            searchUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(query);
+                            break;
+                        case 'surge':
+                            searchUrl = 'https://www.surge.f5.si/s/search.html?q=' + encodeURIComponent(query);
+                            break;
+                        default: // google
+                            searchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query) + '&igu=1';
+                    }
+                    window.location.href = searchUrl;
                 }
             }
         });
