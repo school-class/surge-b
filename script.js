@@ -88,7 +88,14 @@ function switchTab(id) {
 
     document.getElementById(`tab-${id}`).classList.add('active');
     document.getElementById(`iframe-${id}`).classList.add('active');
-    addressBar.value = activeTab.url;
+
+    // Don't show internal newtab.html in address bar
+    if (activeTab.url === 'newtab.html') {
+        addressBar.value = '';
+    } else {
+        addressBar.value = activeTab.url;
+    }
+
     checkBookmarkStatus();
 }
 
@@ -120,13 +127,39 @@ newTabBtn.addEventListener('click', () => createTab());
 function navigate(url) {
     if (!activeTabId) return;
 
-    // Simple URL validation
-    let finalUrl = url;
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        if (url.includes('.') && !url.includes(' ')) {
-            finalUrl = 'https://' + url;
+    let finalUrl = url.trim();
+    if (finalUrl === '') return;
+
+    const engine = searchEngineSelect.value;
+
+    // Better URL detection
+    const isUrl = (str) => {
+        try {
+            const urlObj = new URL(str.startsWith('http') ? str : 'https://' + str);
+            return urlObj.hostname.includes('.');
+        } catch {
+            return false;
+        }
+    };
+
+    if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+        if (isUrl(finalUrl)) {
+            finalUrl = 'https://' + finalUrl;
         } else {
-            finalUrl = 'https://www.google.com/search?q=' + encodeURIComponent(url) + '&igu=1';
+            // Search engine logic
+            switch(engine) {
+                case 'bing':
+                    finalUrl = 'https://www.bing.com/search?q=' + encodeURIComponent(finalUrl);
+                    break;
+                case 'duckduckgo':
+                    finalUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(finalUrl);
+                    break;
+                case 'surge':
+                    finalUrl = 'https://www.surge.f5.si/s/search.html?q=' + encodeURIComponent(finalUrl);
+                    break;
+                default: // google
+                    finalUrl = 'https://www.google.com/search?q=' + encodeURIComponent(finalUrl) + '&igu=1';
+            }
         }
     }
 
@@ -140,6 +173,7 @@ function navigate(url) {
     // Update tab title if possible (simple heuristic)
     if (finalUrl.includes('example.com')) activeTab.title = 'Example Domain';
     else if (finalUrl.includes('google.com')) activeTab.title = 'Google';
+    else if (finalUrl.includes('surge.f5.si')) activeTab.title = 'Surge';
     else activeTab.title = finalUrl.split('/')[2] || finalUrl;
 
     const tabTitleEl = document.getElementById(`tab-title-${activeTabId}`);
@@ -210,7 +244,12 @@ reloadBtn.addEventListener('click', () => {
 });
 
 homeBtn.addEventListener('click', () => {
-    navigate(defaultUrl);
+    const engine = searchEngineSelect.value;
+    if (engine === 'surge') {
+        navigate('https://www.surge.f5.si/s/');
+    } else {
+        navigate(defaultUrl);
+    }
 });
 
 // Bookmarks Logic

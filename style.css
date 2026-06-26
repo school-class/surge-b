@@ -338,16 +338,27 @@ iframe.active {
     }
     #address-bar-container {
         margin: 0;
+        padding: 4px 6px;
     }
     .nav-buttons {
-        gap: 4px;
+        gap: 2px;
     }
     #toolbar {
-        padding: 8px 10px;
-        gap: 8px;
+        padding: 6px 8px;
+        gap: 4px;
     }
     #toolbar button {
         font-size: 14px;
+        padding: 4px;
+    }
+    #address-bar {
+        font-size: 13px;
+    }
+    #ssl-icon {
+        margin-right: 4px;
+    }
+    #tab-grid {
+        grid-template-columns: 1fr;
     }
 }
 
