@@ -1,6 +1,6 @@
 let tabs = [];
 let activeTabId = null;
-const defaultUrl = 'https://www.google.com/search?igu=1'; // Using google with igu=1 for iframe support
+const defaultUrl = 'newtab.html';
 
 const tabContainer = document.getElementById('tabs');
 const contentArea = document.getElementById('content-area');
@@ -16,7 +16,29 @@ const bookmarksSidebar = document.getElementById('bookmarks-sidebar');
 const closeBookmarksBtn = document.getElementById('close-bookmarks-btn');
 const bookmarksList = document.getElementById('bookmarks-list');
 
+// History Elements
+const historyMenuBtn = document.getElementById('history-menu-btn');
+const historySidebar = document.getElementById('history-sidebar');
+const closeHistoryBtn = document.getElementById('close-history-btn');
+const historyList = document.getElementById('history-list');
+
+// Settings Elements
+const settingsBtn = document.getElementById('settings-btn');
+const settingsSidebar = document.getElementById('settings-sidebar');
+const closeSettingsBtn = document.getElementById('close-settings-btn');
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+const searchEngineSelect = document.getElementById('search-engine-select');
+
+// Mobile Switcher Elements
+const mobileTabBtn = document.getElementById('mobile-tab-btn');
+const tabCountBadge = document.getElementById('tab-count-badge');
+const tabSwitcherOverlay = document.getElementById('tab-switcher-overlay');
+const closeSwitcherBtn = document.getElementById('close-switcher-btn');
+const newTabSwitcherBtn = document.getElementById('new-tab-switcher-btn');
+const tabGrid = document.getElementById('tab-grid');
+
 let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+let history = JSON.parse(localStorage.getItem('history')) || [];
 
 function createTab(url = defaultUrl) {
     const id = Date.now().toString();
@@ -51,6 +73,7 @@ function createTab(url = defaultUrl) {
     });
 
     switchTab(id);
+    updateTabSwitcher();
     return id;
 }
 
@@ -74,7 +97,8 @@ function closeTab(id) {
     if (index === -1) return;
 
     tabs.splice(index, 1);
-    document.getElementById(`tab-${id}`).remove();
+    const tabEl = document.getElementById(`tab-${id}`);
+    if (tabEl) tabEl.remove();
     document.getElementById(`iframe-${id}`).remove();
 
     if (activeTabId === id) {
@@ -87,6 +111,7 @@ function closeTab(id) {
             createTab(); // Always keep at least one tab
         }
     }
+    updateTabSwitcher();
 }
 
 newTabBtn.addEventListener('click', () => createTab());
@@ -111,6 +136,48 @@ function navigate(url) {
 
     const iframe = document.getElementById(`iframe-${activeTabId}`);
     iframe.src = finalUrl;
+
+    // Update tab title if possible (simple heuristic)
+    if (finalUrl.includes('example.com')) activeTab.title = 'Example Domain';
+    else if (finalUrl.includes('google.com')) activeTab.title = 'Google';
+    else activeTab.title = finalUrl.split('/')[2] || finalUrl;
+
+    const tabTitleEl = document.getElementById(`tab-title-${activeTabId}`);
+    if (tabTitleEl) tabTitleEl.innerText = activeTab.title;
+
+    addToHistory(finalUrl);
+}
+
+function addToHistory(url) {
+    if (url === 'newtab.html') return;
+    const historyItem = {
+        url,
+        title: url, // For now, use URL as title
+        time: new Date().toLocaleString()
+    };
+    history.unshift(historyItem);
+    if (history.length > 100) history.pop();
+    localStorage.setItem('history', JSON.stringify(history));
+    updateHistoryList();
+}
+
+function updateHistoryList() {
+    if (!historyList) return;
+    historyList.innerHTML = '';
+    history.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = `
+            <strong>${item.title}</strong>
+            <span class="url">${item.url}</span>
+            <span class="time">${item.time}</span>
+        `;
+        li.addEventListener('click', () => {
+            navigate(item.url);
+            historySidebar.classList.add('hidden');
+        });
+        historyList.appendChild(li);
+    });
 }
 
 addressBar.addEventListener('keypress', (e) => {
@@ -222,6 +289,91 @@ bookmarksMenuBtn.addEventListener('click', () => {
 closeBookmarksBtn.addEventListener('click', () => {
     bookmarksSidebar.classList.add('hidden');
 });
+
+// History Logic
+historyMenuBtn.addEventListener('click', () => {
+    historySidebar.classList.toggle('hidden');
+    updateHistoryList();
+});
+
+closeHistoryBtn.addEventListener('click', () => {
+    historySidebar.classList.add('hidden');
+});
+
+// Mobile Tab Switcher Logic
+function updateTabSwitcher() {
+    tabCountBadge.innerText = tabs.length;
+    tabGrid.innerHTML = '';
+
+    tabs.forEach(tab => {
+        const card = document.createElement('div');
+        card.className = `tab-card ${tab.id === activeTabId ? 'active' : ''}`;
+        card.innerHTML = `
+            <div class="tab-card-header">
+                <span>${tab.title}</span>
+                <i class="fas fa-times close-card" data-id="${tab.id}"></i>
+            </div>
+            <div class="tab-card-preview">
+                <i class="fas fa-globe"></i>
+            </div>
+        `;
+
+        card.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('close-card')) {
+                switchTab(tab.id);
+                tabSwitcherOverlay.classList.add('hidden');
+            }
+        });
+
+        card.querySelector('.close-card').addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeTab(tab.id);
+        });
+
+        tabGrid.appendChild(card);
+    });
+}
+
+mobileTabBtn.addEventListener('click', () => {
+    updateTabSwitcher();
+    tabSwitcherOverlay.classList.remove('hidden');
+});
+
+closeSwitcherBtn.addEventListener('click', () => {
+    tabSwitcherOverlay.classList.add('hidden');
+});
+
+newTabSwitcherBtn.addEventListener('click', () => {
+    createTab();
+    tabSwitcherOverlay.classList.add('hidden');
+});
+
+// Settings Logic
+settingsBtn.addEventListener('click', () => {
+    settingsSidebar.classList.toggle('hidden');
+});
+
+closeSettingsBtn.addEventListener('click', () => {
+    settingsSidebar.classList.add('hidden');
+});
+
+darkModeToggle.addEventListener('change', () => {
+    document.body.classList.toggle('dark-mode', darkModeToggle.checked);
+    localStorage.setItem('darkMode', darkModeToggle.checked);
+});
+
+searchEngineSelect.addEventListener('change', () => {
+    localStorage.setItem('searchEngine', searchEngineSelect.value);
+});
+
+// Load Settings
+if (localStorage.getItem('darkMode') === 'true') {
+    darkModeToggle.checked = true;
+    document.body.classList.add('dark-mode');
+}
+if (localStorage.getItem('searchEngine')) {
+    searchEngineSelect.value = localStorage.getItem('searchEngine');
+}
 
 // Initialize with one tab
 window.onload = () => {
