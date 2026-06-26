@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surge Browser</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="browser-container">
+        <!-- Tab Bar -->
+        <div id="tab-bar">
+            <div id="tabs">
+                <!-- Tabs will be injected here -->
+            </div>
+            <button id="new-tab-btn" title="新規タブ"><i class="fas fa-plus"></i></button>
+        </div>
+
+        <!-- Toolbar -->
+        <div id="toolbar">
+            <div class="nav-buttons">
+                <button id="back-btn" title="戻る"><i class="fas fa-arrow-left"></i></button>
+                <button id="forward-btn" title="進む"><i class="fas fa-arrow-right"></i></button>
+                <button id="reload-btn" title="再読み込み"><i class="fas fa-redo"></i></button>
+                <button id="home-btn" title="ホーム"><i class="fas fa-home"></i></button>
+            </div>
+            <div id="address-bar-container">
+                <i class="fas fa-lock" id="ssl-icon"></i>
+                <input type="text" id="address-bar" placeholder="URLを入力または検索" autocomplete="off">
+                <button id="bookmark-btn" title="ブックマークに追加"><i class="far fa-star"></i></button>
+            </div>
+            <div class="menu-buttons">
+                <button id="bookmarks-menu-btn" title="ブックマーク"><i class="fas fa-bookmarks"></i></button>
+                <button id="settings-btn" title="設定"><i class="fas fa-ellipsis-v"></i></button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div id="content-area">
+            <!-- Iframes for each tab will be injected here -->
+        </div>
+
+        <!-- Bookmarks Sidebar (Hidden by default) -->
+        <div id="bookmarks-sidebar" class="hidden">
+            <div class="sidebar-header">
+                <h3>ブックマーク</h3>
+                <button id="close-bookmarks-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <ul id="bookmarks-list">
+                <!-- Bookmarks will be injected here -->
+            </ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
