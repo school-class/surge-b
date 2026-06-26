@@ -1,0 +1,249 @@
+:root {
+    --bg-color: #f0f0f0;
+    --toolbar-bg: rgba(255, 255, 255, 0.8);
+    --border-color: #d1d1d1;
+    --active-tab-bg: #ffffff;
+    --inactive-tab-bg: #e0e0e0;
+    --accent-color: #007aff;
+    --text-color: #333;
+    --address-bar-bg: #ffffff;
+    --sidebar-width: 250px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+}
+
+#browser-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--bg-color);
+}
+
+/* Tab Bar */
+#tab-bar {
+    display: flex;
+    align-items: flex-end;
+    background-color: var(--inactive-tab-bg);
+    padding: 8px 10px 0 10px;
+    height: 40px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#tabs {
+    display: flex;
+    flex-grow: 1;
+    gap: 4px;
+    overflow-x: auto;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    background-color: #ccc;
+    padding: 6px 15px;
+    border-radius: 8px 8px 0 0;
+    min-width: 120px;
+    max-width: 200px;
+    cursor: pointer;
+    font-size: 13px;
+    position: relative;
+    transition: background 0.2s;
+}
+
+.tab.active {
+    background-color: var(--active-tab-bg);
+    color: var(--text-color);
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+}
+
+.tab span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+.close-tab {
+    margin-left: 8px;
+    font-size: 14px;
+    opacity: 0.5;
+}
+
+.close-tab:hover {
+    opacity: 1;
+}
+
+#new-tab-btn {
+    background: none;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    margin-left: 5px;
+    margin-bottom: 4px;
+}
+
+/* Toolbar */
+#toolbar {
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+    background-color: var(--toolbar-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    gap: 15px;
+}
+
+.nav-buttons, .menu-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+#toolbar button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+#toolbar button:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+#address-bar-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    background-color: var(--address-bar-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 4px 10px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#ssl-icon {
+    font-size: 12px;
+    color: #4caf50;
+    margin-right: 8px;
+}
+
+#address-bar {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+}
+
+#bookmark-btn {
+    margin-left: 5px;
+    font-size: 14px;
+}
+
+#bookmark-btn.active {
+    color: #ffcc00;
+}
+
+/* Content Area */
+#content-area {
+    flex-grow: 1;
+    position: relative;
+    background: #fff;
+}
+
+iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none;
+}
+
+iframe.active {
+    display: block;
+}
+
+/* Bookmarks Sidebar */
+#bookmarks-sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100%;
+    background: #fff;
+    border-left: 1px solid var(--border-color);
+    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+}
+
+#bookmarks-sidebar.hidden {
+    transform: translateX(100%);
+}
+
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#bookmarks-list {
+    list-style: none;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.bookmark-item {
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.bookmark-item:hover {
+    background-color: #f0f0f0;
+}
+
+.bookmark-item i {
+    color: var(--accent-color);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+}
