@@ -10,6 +10,7 @@ const backBtn = document.getElementById('back-btn');
 const forwardBtn = document.getElementById('forward-btn');
 const reloadBtn = document.getElementById('reload-btn');
 const homeBtn = document.getElementById('home-btn');
+const externalBtn = document.getElementById('external-btn');
 const bookmarkBtn = document.getElementById('bookmark-btn');
 const bookmarksMenuBtn = document.getElementById('bookmarks-menu-btn');
 const bookmarksSidebar = document.getElementById('bookmarks-sidebar');
@@ -130,6 +131,17 @@ function navigate(url) {
     let finalUrl = url.trim();
     if (finalUrl === '') return;
 
+    // Check for common frame-blocking sites
+    const blockedSites = ['google.com', 'youtube.com', 'github.com', 'twitter.com', 'x.com', 'facebook.com', 'instagram.com'];
+    const isBlocked = blockedSites.some(site => finalUrl.includes(site) && !finalUrl.includes('igu=1'));
+
+    if (isBlocked && !finalUrl.includes('search.html')) {
+        if (confirm("このサイトはセキュリティ上の理由でブラウザ内での表示をブロックする可能性があります。別ウィンドウで開きますか？")) {
+            window.open(finalUrl, '_blank');
+            return;
+        }
+    }
+
     const engine = searchEngineSelect.value;
 
     // Better URL detection
@@ -241,6 +253,13 @@ forwardBtn.addEventListener('click', () => {
 reloadBtn.addEventListener('click', () => {
     const iframe = document.getElementById(`iframe-${activeTabId}`);
     iframe.src = iframe.src;
+});
+
+externalBtn.addEventListener('click', () => {
+    const activeTab = tabs.find(t => t.id === activeTabId);
+    if (activeTab && activeTab.url !== 'newtab.html') {
+        window.open(activeTab.url, '_blank');
+    }
 });
 
 homeBtn.addEventListener('click', () => {
