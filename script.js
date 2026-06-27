@@ -64,7 +64,12 @@ function createTab(url = defaultUrl) {
     // Create Iframe UI
     const iframe = document.createElement('iframe');
     iframe.id = `iframe-${id}`;
+    iframe.name = `browser-frame-${id}`;
     iframe.src = url;
+    // Add comprehensive permissions to improve JS functionality inside iframes
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; geolocation; microphone; camera; midi; web-share');
+    // Allow forms and scripts to run properly
+    iframe.setAttribute('sandbox', 'allow-forms scrolling allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation allow-downloads');
     contentArea.appendChild(iframe);
 
     // Close button event

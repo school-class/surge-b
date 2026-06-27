@@ -49,9 +49,11 @@
             }
         }
         .search-container {
-            width: 90%;
+            width: 100%;
             max-width: 600px;
             position: relative;
+            box-sizing: border-box;
+            padding: 0 10px;
         }
         input {
             width: 100%;
@@ -61,6 +63,7 @@
             border-radius: 24px;
             outline: none;
             box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+            box-sizing: border-box;
         }
         .fa-search {
             position: absolute;
@@ -113,26 +116,34 @@
         <input type="text" id="search-input" placeholder="Google で検索または URL を入力" autofocus>
     </div>
     <div class="shortcuts">
-        <a href="https://www.google.com" class="shortcut">
+        <div class="shortcut" onclick="openUrl('https://www.google.com')">
             <div class="icon-box"><i class="fab fa-google" style="color: #4285f4;"></i></div>
             <span>Google</span>
-        </a>
-        <a href="https://www.youtube.com" class="shortcut">
+        </div>
+        <div class="shortcut" onclick="openUrl('https://www.youtube.com')">
             <div class="icon-box"><i class="fab fa-youtube" style="color: #ff0000;"></i></div>
             <span>YouTube</span>
-        </a>
-        <a href="https://github.com" class="shortcut">
+        </div>
+        <div class="shortcut" onclick="openUrl('https://github.com')">
             <div class="icon-box"><i class="fab fa-github"></i></div>
             <span>GitHub</span>
-        </a>
-        <a href="https://twitter.com" class="shortcut">
+        </div>
+        <div class="shortcut" onclick="openUrl('https://twitter.com')">
             <div class="icon-box"><i class="fab fa-twitter" style="color: #1da1f2;"></i></div>
             <span>Twitter</span>
-        </a>
+        </div>
     </div>
 
     <script>
         const searchInput = document.getElementById('search-input');
+
+        function openUrl(url) {
+            if (window.parent && window.parent.navigate) {
+                window.parent.navigate(url);
+            } else {
+                window.location.href = url;
+            }
+        }
 
         function updatePlaceholder() {
             const engine = localStorage.getItem('searchEngine') || 'google';
