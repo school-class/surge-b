@@ -271,6 +271,11 @@ body, html {
     background-color: rgba(0,0,0,0.05);
 }
 
+#toolbar button:active {
+    background-color: rgba(0,0,0,0.1);
+    transform: scale(0.95);
+}
+
 #address-bar-container {
     flex-grow: 1;
     display: flex;

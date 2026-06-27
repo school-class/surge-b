@@ -80,15 +80,19 @@ function createTab(url = defaultUrl) {
 
 function switchTab(id) {
     if (activeTabId) {
-        document.getElementById(`tab-${activeTabId}`).classList.remove('active');
-        document.getElementById(`iframe-${activeTabId}`).classList.remove('active');
+        const prevTab = document.getElementById(`tab-${activeTabId}`);
+        const prevIframe = document.getElementById(`iframe-${activeTabId}`);
+        if (prevTab) prevTab.classList.remove('active');
+        if (prevIframe) prevIframe.classList.remove('active');
     }
 
     activeTabId = id;
     const activeTab = tabs.find(t => t.id === id);
 
-    document.getElementById(`tab-${id}`).classList.add('active');
-    document.getElementById(`iframe-${id}`).classList.add('active');
+    const currTab = document.getElementById(`tab-${id}`);
+    const currIframe = document.getElementById(`iframe-${id}`);
+    if (currTab) currTab.classList.add('active');
+    if (currIframe) currIframe.classList.add('active');
 
     // Don't show internal newtab.html in address bar
     if (activeTab.url === 'newtab.html') {
@@ -177,13 +181,19 @@ function navigate(url) {
 
     const activeTab = tabs.find(t => t.id === activeTabId);
     activeTab.url = finalUrl;
-    addressBar.value = finalUrl;
+
+    if (finalUrl === 'newtab.html') {
+        addressBar.value = '';
+    } else {
+        addressBar.value = finalUrl;
+    }
 
     const iframe = document.getElementById(`iframe-${activeTabId}`);
     iframe.src = finalUrl;
 
     // Update tab title if possible (simple heuristic)
-    if (finalUrl.includes('example.com')) activeTab.title = 'Example Domain';
+    if (finalUrl === 'newtab.html') activeTab.title = '新規タブ';
+    else if (finalUrl.includes('example.com')) activeTab.title = 'Example Domain';
     else if (finalUrl.includes('google.com')) activeTab.title = 'Google';
     else if (finalUrl.includes('surge.f5.si')) activeTab.title = 'Surge';
     else activeTab.title = finalUrl.split('/')[2] || finalUrl;
@@ -321,6 +331,12 @@ function checkBookmarkStatus() {
     }
 }
 
+function closeAllSidebars() {
+    bookmarksSidebar.classList.add('hidden');
+    historySidebar.classList.add('hidden');
+    settingsSidebar.classList.add('hidden');
+}
+
 bookmarkBtn.addEventListener('click', () => {
     const activeTab = tabs.find(t => t.id === activeTabId);
     const index = bookmarks.findIndex(b => b.url === activeTab.url);
@@ -340,8 +356,12 @@ bookmarkBtn.addEventListener('click', () => {
 });
 
 bookmarksMenuBtn.addEventListener('click', () => {
-    bookmarksSidebar.classList.toggle('hidden');
-    updateBookmarksList();
+    const isHidden = bookmarksSidebar.classList.contains('hidden');
+    closeAllSidebars();
+    if (isHidden) {
+        bookmarksSidebar.classList.remove('hidden');
+        updateBookmarksList();
+    }
 });
 
 closeBookmarksBtn.addEventListener('click', () => {
@@ -350,8 +370,12 @@ closeBookmarksBtn.addEventListener('click', () => {
 
 // History Logic
 historyMenuBtn.addEventListener('click', () => {
-    historySidebar.classList.toggle('hidden');
-    updateHistoryList();
+    const isHidden = historySidebar.classList.contains('hidden');
+    closeAllSidebars();
+    if (isHidden) {
+        historySidebar.classList.remove('hidden');
+        updateHistoryList();
+    }
 });
 
 closeHistoryBtn.addEventListener('click', () => {
@@ -408,7 +432,11 @@ newTabSwitcherBtn.addEventListener('click', () => {
 
 // Settings Logic
 settingsBtn.addEventListener('click', () => {
-    settingsSidebar.classList.toggle('hidden');
+    const isHidden = settingsSidebar.classList.contains('hidden');
+    closeAllSidebars();
+    if (isHidden) {
+        settingsSidebar.classList.remove('hidden');
+    }
 });
 
 closeSettingsBtn.addEventListener('click', () => {
